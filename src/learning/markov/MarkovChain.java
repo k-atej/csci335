@@ -1,6 +1,7 @@
 package learning.markov;
 
 import learning.core.Histogram;
+import org.junit.experimental.max.MaxHistory;
 
 import java.util.*;
 
@@ -30,6 +31,26 @@ public class MarkovChain<L,S> {
     // Increase the count for the transition from prev to next.
     // Should pass SimpleMarkovTest.testCreateChains().
     public void count(Optional<S> prev, L label, S next) {
+        if (label2symbol2symbol.containsKey(label)) {
+            System.out.println("contains lang!");
+            if (label2symbol2symbol.get(label).containsKey(prev)) {
+                System.out.println("contains letter!");
+                    label2symbol2symbol.get(label).get(prev).bump(next);
+
+            }
+            else {
+                Histogram<S> hist = new Histogram<>();
+                hist.bump(next);
+                label2symbol2symbol.get(label).put(prev, hist);
+            }
+        }
+        else {
+            Histogram<S> hist = new Histogram<>();
+            hist.bump(next);
+            HashMap<Optional<S>, Histogram<S>> hash = new HashMap<>();
+            hash.put(prev, hist);
+            label2symbol2symbol.put(label, hash);
+        }
         // TODO: YOUR CODE HERE
     }
 
