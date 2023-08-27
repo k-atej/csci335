@@ -1,7 +1,6 @@
 package learning.markov;
 
 import learning.core.Histogram;
-import org.junit.experimental.max.MaxHistory;
 
 import java.util.*;
 
@@ -32,9 +31,7 @@ public class MarkovChain<L,S> {
     // Should pass SimpleMarkovTest.testCreateChains().
     public void count(Optional<S> prev, L label, S next) {
         if (label2symbol2symbol.containsKey(label)) {
-            System.out.println("contains lang!");
             if (label2symbol2symbol.get(label).containsKey(prev)) {
-                System.out.println("contains letter!");
                     label2symbol2symbol.get(label).get(prev).bump(next);
 
             }
@@ -60,21 +57,76 @@ public class MarkovChain<L,S> {
     // HINT: Be sure to add 1 to both the numerator and denominator when finding the probability of a
     // transition. This helps avoid sending the probability to zero.
     public double probability(ArrayList<S> sequence, L label) {
+        ArrayList<Float> arr = new ArrayList<>();
+        int i = 0;
+        int num;
+        int denom;
+        boolean running = true;
+        while (running) {
+            if (i == sequence.size() - 1) {
+                running = false;
+            }
+            else {
+                S s = sequence.get(i);
+                if (label2symbol2symbol.get(label).containsKey(Optional.of(s))){
+                    num = 1 + label2symbol2symbol.get(label).get(Optional.of(s)).getCountFor(sequence.get(i + 1));
+                    denom = 1 + label2symbol2symbol.get(label).get(Optional.of(s)).getTotalCounts();
+
+                    float val = (float) num/denom;
+                    arr.add(i, val);
+                }
+                else {
+                    arr.add(i, 1.0F);
+                }
+            }
+            i += 1;
+        }
+        float total = 1;
+        for (float value : arr) {
+            total = total * value;
+        }
+
         // TODO: YOUR CODE HERE
-        return 0.0;
+        return total;
     }
 
     // Return a map from each label to P(label | sequence).
     // Should pass MajorMarkovTest.testSentenceDistributions()
     public LinkedHashMap<L,Double> labelDistribution(ArrayList<S> sequence) {
+        LinkedHashMap<L, Double> hash = new LinkedHashMap<>();
+        LinkedHashMap<L, Double> hash2 = new LinkedHashMap<>();
+        Set<L> labels = allLabels();
+        double total = 0;
+        for (L label : labels) {
+            double dub = probability(sequence, label);
+            hash.put(label, dub);
+            total += dub;
+        }
+        for (L key : hash.keySet()) {
+            hash2.put(key, hash.get(key) / total);
+        }
         // TODO: YOUR CODE HERE
-        return null;
+        return hash2;
     }
 
     // Calls labelDistribution(). Returns the label with highest probability.
     // Should pass MajorMarkovTest.bestChainTest()
     public L bestMatchingChain(ArrayList<S> sequence) {
+        LinkedHashMap<L, Double> hash = labelDistribution(sequence);
+        ArrayList<L> arr = new ArrayList<>();
+        Set<L> s = hash.keySet();
+        int i = 0;
+        for (L label : s) {
+            arr.add(i, label);
+            i += 1;
+        }
+        L highest = arr.get(0);
+        for (L key : s) {
+            if ((hash.get(key)) > hash.get(highest)) {
+                highest = key;
+            }
+        }
         // TODO: YOUR CODE HERE
-        return null;
+        return highest;
     }
 }
