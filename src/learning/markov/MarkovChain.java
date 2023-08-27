@@ -63,7 +63,7 @@ public class MarkovChain<L,S> {
         int denom;
         boolean running = true;
         while (running) {
-            if (i == sequence.size() - 1) {
+            if (i >= sequence.size() - 1) {
                 running = false;
             }
             else {
