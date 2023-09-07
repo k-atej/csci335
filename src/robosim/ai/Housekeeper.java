@@ -11,9 +11,12 @@ public class Housekeeper implements Controller {
     //avoid hitting objects
     int state = 5;
     int act = 4;
-    QTable q = new QTable(state, act, 0, 10, 1, 0.5);
 
-    // need to figure out how to get it to turn towards dirt!
+    double discount = 0.7;
+    int rateConstant = 1;
+    int startState = 0;
+    int targetVisits = 5;
+    QTable q = new QTable(state, act, startState, targetVisits, rateConstant, discount);
 
     @Override
     public void control(Simulator sim) {
@@ -76,14 +79,13 @@ public class Housekeeper implements Controller {
         return 2;
     }
 
-    //add dirt rewards
-
     //states
-    // 1 close to obstacle
-    // 0 hitting obstacle
-    // 3 close to dirt
-    // 2 hitting dirt
-    // 4 far
+
+    //0 hitting obstacle
+    //1 close to obstacle
+    //2 hitting dirt
+    //3 close to dirt
+    //4 far
     public int[][] initReward() {
         int[][] r = new int[state][act];
         r[0][0] = 0;
