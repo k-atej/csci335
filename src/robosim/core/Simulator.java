@@ -10,7 +10,8 @@ import java.util.Optional;
 
 public class Simulator {
 	private SimMap map;
-	private Robot bot;
+
+	public Robot bot;
 	private double width, height;
 	private boolean wasHit;
 	private Histogram<String> stats;

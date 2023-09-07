@@ -5,7 +5,7 @@ import robosim.reinforcement.QTable;
 
 public class ForwardAvoidQ implements Controller {
 
-    QTable q = new QTable(3, 4, 2, 10, 2, 0.5);
+    QTable q = new QTable(3, 4, 0, 10, 1, 1.0);
 
     @Override
     public void control(Simulator sim) {
@@ -47,17 +47,17 @@ public class ForwardAvoidQ implements Controller {
     public int[][] initReward() {
         int[][] r = new int[3][4];
         r[0][0] = 0;
-        r[0][1] = 0;
+        r[0][1] = 10;
         r[0][2] = 10;
         r[0][3] = 10;
-        r[1][0] = 15;
-        r[1][1] = 10;
-        r[1][2] = 10;
-        r[1][3] = 10;
-        r[2][0] = 150;
+        r[1][0] = 10;
+        r[1][1] = 15;
+        r[1][2] = 500;
+        r[1][3] = 500;
+        r[2][0] = 1500;
         r[2][1] = 100;
-        r[2][2] = 50;
-        r[2][3] = 50;
+        r[2][2] = 100;
+        r[2][3] = 100;
         return r;
     }
 
