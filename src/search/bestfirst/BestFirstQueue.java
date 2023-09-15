@@ -3,10 +3,7 @@ package search.bestfirst;
 import search.SearchNode;
 import search.SearchQueue;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.function.ToIntFunction;
 
 public class BestFirstQueue<T> implements SearchQueue<T> {
@@ -15,21 +12,32 @@ public class BestFirstQueue<T> implements SearchQueue<T> {
     // TODO: Implement this class
     // HINT: Use java.util.PriorityQueue. It will really help you.
 
-    private HashSet<T> visited = new HashSet<>();
+    private HashMap<T, Integer> visited;
 
     public BestFirstQueue(ToIntFunction<T> heuristic) {
         this.heuristic = heuristic;
         this.pq = new PriorityQueue<>(Comparator.comparingInt(searchnode -> this.heuristic.applyAsInt(searchnode.getValue())));
-        // i don't think i understand how this comparator really works, but its passing the test
-        // i found this comparator notation on geeksforgeeks
+        this.visited = new HashMap<>();
+    }
+
+    private int Total(SearchNode<T> searchnode){
+        return this.heuristic.applyAsInt(searchnode.getValue()) + searchnode.getDepth();
     }
 
     @Override
     public void enqueue(SearchNode<T> node) {
-        if (!visited.contains(node.getValue())) {
-            pq.add(node);
-            visited.add(node.getValue());
+        // TODO: Your code here (to consider visited nodes and their estimates)
+        int Total = Total(node);
+
+        // If the node is already visited and has a lesser or equal estimate, then skip.
+        if (visited.containsKey(node.getValue())){
+            if (visited.get(node.getValue()) <= Total) {
+                return;
+            }
         }
+
+        pq.add(node);
+        visited.put(node.getValue(), Total);
         // TODO: Your code here
     }
 
