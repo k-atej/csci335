@@ -26,8 +26,20 @@ public class SelfOrgMap<V> {
     //  that is, the y-coordinate is updated in the outer loop, and the x-coordinate
     //  is updated in the inner loop.
     public SOMPoint bestFor(V example) {
-        // Your code here.
-        return null;
+        // not sure if this works or not - thinking maybe not!
+        SOMPoint closest = null;
+        double smallest = Double.MAX_VALUE;
+        for (int y = 0; y < getMapHeight(); y++) {
+            for (int x = 0; x < getMapWidth(); x++) {
+                V node = getNode(x, y);
+                double current = distance.applyAsDouble(node, example);
+                if (current < smallest) {
+                    smallest = current;
+                    closest = new SOMPoint(x, y);
+                }
+            }
+        }
+        return closest;
     }
 
     // TODO: Train this SOM with example.
@@ -37,7 +49,18 @@ public class SelfOrgMap<V> {
     //  3. Update each neighbor of the best matching node that is in the map,
     //     using a learning rate of 0.4.
     public void train(V example) {
-        // Your code here
+
+        SOMPoint Node = bestFor(example);
+        V best = getNode(Node.x(), Node.y());
+        V average = averager.weightedAverage(example, best, 0.9);
+        map[Node.x()][Node.y()] = average;
+        for (SOMPoint neighbor : Node.neighbors()) {
+            if (inMap(neighbor)) {
+                V neighbor1 = getNode(neighbor.x(), neighbor.y());
+                V average1 = averager.weightedAverage(example, neighbor1, 0.4);
+                map[neighbor.x()][neighbor.y()] = average1;
+            }
+        }
     }
 
     public V getNode(int x, int y) {
