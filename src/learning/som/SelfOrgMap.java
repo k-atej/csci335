@@ -26,39 +26,31 @@ public class SelfOrgMap<V> {
     //  that is, the y-coordinate is updated in the outer loop, and the x-coordinate
     //  is updated in the inner loop.
     public SOMPoint bestFor(V example) {
-        // not sure if this works or not - thinking maybe not!
-        SOMPoint closest = null;
-        double smallest = Double.MAX_VALUE;
-        for (int y = 0; y < getMapHeight(); y++) {
-            for (int x = 0; x < getMapWidth(); x++) {
-                V node = getNode(x, y);
-                double current = distance.applyAsDouble(node, example);
-                if (current < smallest) {
-                    smallest = current;
-                    closest = new SOMPoint(x, y);
+        // Your code here.
+        Double best_distance = Double.MAX_VALUE;
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < getMapHeight(); i++){
+            for(int j = 0; j < getMapWidth(); j++){
+                Double curr_distance = distance.applyAsDouble(map[j][i], example);
+                if(curr_distance < best_distance){
+                    best_distance = curr_distance;
+                    y = i;
+                    x = j;
                 }
             }
         }
-        return closest;
+        return new SOMPoint(x, y);
     }
-
-    // TODO: Train this SOM with example.
-    //  1. Find the best matching node.
-    //  2. Update the best matching node with the average of itself and example,
-    //     using a learning rate of 0.9.
-    //  3. Update each neighbor of the best matching node that is in the map,
-    //     using a learning rate of 0.4.
     public void train(V example) {
-
-        SOMPoint Node = bestFor(example);
-        V best = getNode(Node.x(), Node.y());
-        V average = averager.weightedAverage(example, best, 0.9);
-        map[Node.x()][Node.y()] = average;
-        for (SOMPoint neighbor : Node.neighbors()) {
-            if (inMap(neighbor)) {
-                V neighbor1 = getNode(neighbor.x(), neighbor.y());
-                V average1 = averager.weightedAverage(example, neighbor1, 0.4);
-                map[neighbor.x()][neighbor.y()] = average1;
+        SOMPoint matching_node = bestFor(example);
+        V matching_v = map[matching_node.x()][matching_node.y()];
+        map[matching_node.x()][matching_node.y()] = averager.weightedAverage(example, matching_v, .9);
+        SOMPoint[] neighbors = matching_node.neighbors();
+        for(SOMPoint neighbor: neighbors){
+            if(neighbor.x() < getMapWidth() && neighbor.y() < getMapHeight() && neighbor.y() >= 0 && neighbor.x() >= 0) {
+                V neighbor_v = map[neighbor.x()][neighbor.y()];
+                map[neighbor.x()][neighbor.y()] = averager.weightedAverage(example, neighbor_v, 0.4);
             }
         }
     }
@@ -66,6 +58,7 @@ public class SelfOrgMap<V> {
     public V getNode(int x, int y) {
         return map[x][y];
     }
+
 
     public int getMapWidth() {
         return map.length;
