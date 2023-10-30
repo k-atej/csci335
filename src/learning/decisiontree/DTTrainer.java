@@ -175,6 +175,10 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 			}
 		}
 
+		if (split1.isEmpty() || split2.isEmpty()) {
+			return new Duple<>(data,data);
+		}
+
 		return new Duple<>(split1, split2);
 	}
 }
