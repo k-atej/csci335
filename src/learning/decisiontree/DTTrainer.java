@@ -3,7 +3,6 @@ package learning.decisiontree;
 import core.Duple;
 import learning.core.Histogram;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -17,7 +16,7 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 	private Function<ArrayList<Duple<V,L>>, ArrayList<Duple<F,FV>>> allFeatures;
 	private BiFunction<V,F,FV> getFeatureValue;
 	private Function<FV,FV> successor;
-	
+
 	public DTTrainer(ArrayList<Duple<V, L>> data, Function<ArrayList<Duple<V, L>>, ArrayList<Duple<F,FV>>> allFeatures,
 					 boolean restrictFeatures, BiFunction<V,F,FV> getFeatureValue, Function<FV,FV> successor) {
 		baseData = data;
@@ -26,11 +25,12 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 		this.getFeatureValue = getFeatureValue;
 		this.successor = successor;
 	}
-	
+
 	public DTTrainer(ArrayList<Duple<V, L>> data, Function<ArrayList<Duple<V,L>>, ArrayList<Duple<F,FV>>> allFeatures,
 					 BiFunction<V,F,FV> getFeatureValue, Function<FV,FV> successor) {
 		this(data, allFeatures, false, getFeatureValue, successor);
 	}
+
 
 	// TODO: Call allFeatures.apply() to get the feature list. Then shuffle the list, retaining
 	//  only targetNumber features. Should pass DTTest.testReduced().
@@ -76,8 +76,10 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 				int num = (int) Math.sqrt(features.size());
 				features = reducedFeatures(data, allFeatures, num);
 			}
-
-			double max = -Double.MAX_VALUE;
+			if (features.size() == 0) {
+				System.out.println("This is bad... " + data.size());
+			}
+			double max = Double.NEGATIVE_INFINITY;
 			Duple<F, FV> current = null;
 			Duple<ArrayList<Duple<V, L>>, ArrayList<Duple<V, L>>> finalduple = null;
 			for (Duple<F, FV> feature : features) {
@@ -89,11 +91,12 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 					current = feature;
 				}
 			}
-			if (finalduple.getFirst() == null) {
-				return new DTLeaf<>(mostPopularLabelFrom(finalduple.getFirst()));
-			}
-			if (finalduple.getSecond() == null) {
+
+			if (finalduple.getFirst().size() == 0) {
 				return new DTLeaf<>(mostPopularLabelFrom(finalduple.getSecond()));
+			}
+			if (finalduple.getSecond().size() == 0) {
+				return new DTLeaf<>(mostPopularLabelFrom(finalduple.getFirst()));
 			}
 
 			DecisionTree<V, L, F, FV> right_side = train(finalduple.getFirst());
@@ -173,10 +176,6 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 			else {
 				split2.add(datum);
 			}
-		}
-
-		if (split1.isEmpty() || split2.isEmpty()) {
-			return new Duple<>(data,data);
 		}
 
 		return new Duple<>(split1, split2);

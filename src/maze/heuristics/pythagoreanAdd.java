@@ -58,3 +58,5 @@ public class pythagoreanAdd implements ToIntFunction<MazeExplorer> {
         return (int) sqrt(x_diff * x_diff + y_diff * y_diff);
     }
 }
+
+

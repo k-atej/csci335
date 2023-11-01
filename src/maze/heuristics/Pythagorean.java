@@ -16,3 +16,7 @@ public class Pythagorean implements ToIntFunction<MazeExplorer> {
         return (int) sqrt(x_diff*x_diff + y_diff*y_diff);
     }
 }
+
+// improvements: pythagorean distance to nearest treasures, like mantotreasure
+//              average of pythagorean and manhattan distances? (non-monotonic)
+//              updated pythoagoreanadd to add up distance to treasure and distance between treasure to end

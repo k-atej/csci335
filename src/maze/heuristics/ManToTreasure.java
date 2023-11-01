@@ -40,3 +40,5 @@ public class ManToTreasure implements ToIntFunction<MazeExplorer> {
         return closest;
     }
 }
+
+
